@@ -1,1 +1,2 @@
-# MOOCpaterns
+# Repository for "Analysis of Students' Patterns and Prediction Using edX Data and Learning Analytics"
+This repository contains the code and tool presented in the paper "Analysis of Students' Patterns and Prediction Using edX Data and Learning Analytics", published in IEEE Frontiers in Education (FIE 2025) conference. This code has been implemented by María Sanz-Gómez, with some translations by Pedro Manuel Moreno-Marcos.
