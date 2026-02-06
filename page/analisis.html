@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<HEAD>
+  <TITLE>Analisis</TITLE>
+  <link rel="stylesheet" type="text/css" href="index.css">
+</HEAD>
+<BODY>
+  <div>
+    <div id = "BarraNavegacion">
+      <li> <a href="#"><img src="logo.png" ></a></li>
+      <li> <a href="#" id ="Cabecera"> PATTERN ANALYZER</a></li>
+      <li> <a href="#" id ="Nav" > </a>
+        <li> <a href="Principal.html">HOME</a> </li>
+        <li> <a href="descripcion.html">DESCRIPTION</a> </li>
+        <li> <a href="analisis.html">ANALYSIS OF FILES</a> </li>
+      </li>
+    </div>
+
+    <div id = "contenido">
+
+      <br></br>
+      <h1><b> FILE SELECTION<b> </h1>
+        <hr>
+        <h2>Select the file you want to process and press 'Process'</h2>
+        <h3>(For more information about the visualization <a HREF="descripcion.html"> <u>click here</u>) <a></h3>
+          <input type="file" id="get_the_file" onchange="loadFile(this.files[0])" class="input-file">
+          <button id="mybutton" class="boton alternativo" href="#">Process</button>
+          <br> <br>
+          <h1 id="titulo_resultado"></h1>
+          <div id="resultado">
+            <div id="r1">
+              <h2 id="titulo_flechas"></h2>
+              <h3 id="titulo_flechas_expl"></h3>
+              <h3 id="titulo_flechas_expl_estu"></h3>
+              <div id='image'></div>
+            </div>
+            <div id="r2">
+              <h2 id="titulo_barras_hori"></h2>
+              <canvas id="grafica_hori" width="400" height="200"></canvas>
+              <h2 id="titulo_velocimetro"></h2>
+              <h3 id="titulo_velocimetro1"></h3>
+              <canvas id="velocimetro1" width="400" height="200"></canvas>
+              <h3 id="titulo_velocimetro2"></h3>
+              <canvas id="velocimetro2" width="400" height="200"></canvas>
+              <h3 id="titulo_velocimetro3"></h3>
+              <canvas id="velocimetro3" width="400" height="200"></canvas>
+              <h3 id="titulo_velocimetro4"></h3>
+              <canvas id="velocimetro4" width="400" height="200"></canvas>
+              <h2 id="titulo_barras"></h2>
+              <canvas id="grafica" width="300" height="300"></canvas>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gauge.js/1.3.5/gauge.min.js"></script>
+      <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script>
+      google.charts.load('current', {'packages':['gauge']});
+      var solo_estudiante = 0;
+      var mostrar = 0;
+      var actualizar = 0;
+      var links_json =[];
+      var pass_totales = 0;
+      var fail_totales = 0;
+      var button = document.getElementById("mybutton");
+
+      //-----------------------PROCESAR FICHERO-------------------------------------
+
+      button.onclick = function(){ //Si pulsan en boton
+
+        if(mostrar==1){ //Si se ha leido el fichero correctamente
+          document.getElementById("titulo_resultado").innerHTML = '<b> CHARTS WITH THE EVENTS OF THE SELECTED FILE</b> <hr>';
+          var array = links_json.split(';');
+          var links_definitivo = [];
+          var times_s = 0;
+          var times_a = 0;
+          //Se procesa el JSON
+          for (let i = 0; i < array.length - 1; i++) {
+            try {
+              var coche = JSON.parse(array[i].replaceAll("\'", "\""));
+              links_definitivo.push(coche);
+              var str = JSON.stringify(coche);
+              var a = str.includes("Pass");
+              var s = str.includes("Fail");
+
+              var regex = "/(\d+)/g";
+              if(times_s == 0 && s == true){
+                //console.log(str)
+				var d = str.indexOf("Fail");
+				console.log(d)
+                var lista_s = str.slice(d+6, d+15).split("% |");
+                fail_totales = parseInt(lista_s[0]);
+                times_s = times_s + 1;
+                solo_estudiante = 1;
+              }
+              if(times_a == 0 && a == true){
+			  	//console.log(str)
+                var d = str.indexOf("Pass");
+                var lista_s = str.slice(d+6, d+15).split("% |");
+                var long_array  = lista_s.length
+				if(long_array == 1) {
+					solo_estudiante = 0;
+				} else {
+					pass_totales = parseInt(lista_s[0]);
+					times_a = times_a + 1;
+					solo_estudiante = 1;
+				}
+              }
+
+            }catch (error) {
+              window.alert("Error de formato JSON");
+            }
+          }
+		  console.log("Solo " + solo_estudiante)
+          //Se crea la figura
+          figura(links_definitivo);
+
+          if (solo_estudiante !=0){
+            document.getElementById("titulo_flechas").innerHTML = 'Final chart with the patterns';
+            document.getElementById("titulo_barras").innerHTML = 'Column chart with the distribuiton of grades';
+            document.getElementById("titulo_barras_hori").innerHTML = 'Bar chart with the distribution of patterns';
+            document.getElementById("titulo_velocimetro").innerHTML = 'Gauges of the three main events';
+            grafico_barras(pass_totales, fail_totales);
+            grafico_barras_hori(links_json);
+            velocimetro_grafica(links_json);
+          }
+          else{
+            document.getElementById("titulo_flechas").innerHTML = 'Final event diagram for a student';
+            document.getElementById("titulo_barras_hori").innerHTML = 'Bar chart with the distribution of patterns';
+            document.getElementById("titulo_velocimetro").innerHTML = 'Gauges of the three main events';
+            grafico_barras_hori_estu(links_json);
+            velocimetro_grafica_estu(links_json);
+          }
+          mostrar = 0;
+          actualizar = 1;
+        }
+        else{
+          window.alert("ERROR: Introduzca un archivo");
+        }
+
+      }
+
+      //-----------------------LEER FICHERO-------------------------------------
+
+      async function loadFile(file) {
+        let text = await file.text();
+        links_json = text;
+        mostrar = 1;
+
+      }
+
+      //-----------------------GRÁFICO DE BARRAS-------------------------------------
+
+      function grafico_barras(pass, fail){
+
+        const _grafica = document.querySelector("#grafica");
+		console.log(pass)
+		console.log(fail)
+        const etiquetas = ["Pass", "Fail"];
+        const datos = {
+          label: "Calificaciones Finales (%)",
+          data: [pass, fail],
+          backgroundColor: 'rgba(219, 223, 183, 0.8)', // Color de fondo
+          borderColor: 'rgba(184, 178, 166, 1)', // Color del borde
+          borderWidth: 1,// Ancho del borde
+        };
+        new Chart(_grafica, {
+          type: 'bar',
+          data: { labels: etiquetas, datasets: [datos]},
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  fontSize: 30,
+                  beginAtZero: true
+                }
+              }],
+            },
+          }
+        });
+
+      }
+
+
+      //-----------------------GRÁFICO DE BARRAS HORIZONTALES-------------------------------------
+      function grafico_barras_hori(links_json){
+        var array = links_json.split(';');
+        const lab =  ['Problem_Video','Problem_Forum','Problem_Problem','Video_Problem', 'Video_Forum', 'Video_Video', 'Forum_Problem','Forum_Video','Forum_Forum' ];
+        var datos = [0,0,0,0,0,0,0,0,0];
+        var array = links_json.split(';');
+        for (let i = 0; i < array.length - 1; i++) {
+          try {
+            var coche = JSON.parse(array[i].replaceAll("\'", "\""));
+            var str = JSON.stringify(coche);
+            if (links_json.includes('Forum Comment') == true ){
+              if(str.includes("\"source\":\"Video")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var ar = str.split('|');
+                  datos[5] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[3] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Forum Comment")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[4] =  datos[4] + parseInt(ar[1],10);
+                }
+                if(str.includes("\"target\":\"Forum Search")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[4] = datos[4]+ parseInt(ar[1],10);
+                }
+                if(str.includes("\"target\":\"Forum Created")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[4] =  datos[4] + parseInt(ar[1],10);
+                }
+                if(str.includes("\"target\":\"Forum Response")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[4] =  datos[4] + parseInt(ar[1],10);
+                }
+              }
+              if(str.includes("\"source\":\"Problem")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[0] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var ar = str.split('|');
+                  datos[2] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Forum Comment")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[1] =  datos[1] + parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Forum Search")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[1] = datos[1]+ parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Forum Created")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[1] =  datos[1] + parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Forum Response")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[1] =  datos[1] + parseInt(ar[1],10);
+                }
+              }if(str.includes("\"source\":\"Forum")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[7] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[6] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Forum")== true){
+                  var ar = str.split('|');
+                  datos[8] = datos[8] + parseInt(ar[1],10);
+                }
+
+              }
+            }else{
+              if(str.includes("\"source\":\"Video")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var ar = str.split('|');
+                  datos[5] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[3] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Forum")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[4] = parseInt(ar[1],10);
+                }
+
+              }
+              if(str.includes("\"source\":\"Problem")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[0] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var ar = str.split('|');
+                  datos[2] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Forum")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[1] = parseInt(ar[1],10);
+                }
+
+              }
+              if(str.includes("\"source\":\"Forum")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[7] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name');
+                  var ar = name[1].split('|');
+                  datos[6] = parseInt(ar[1],10);
+                }if(str.includes("\"target\":\"Forum")== true){
+                  var ar = str.split('|');
+                  datos[8] = parseInt(ar[1],10);
+
+                }
+              }
+            }
+          }catch (error) {
+            window.alert("Error de formato JSON");
+          }
+        }
+
+        const _grafica = document.querySelector("#grafica_hori");
+        new Chart(_grafica, {
+          type: 'horizontalBar',
+          data: {
+            labels: lab,
+            datasets: [{
+              backgroundColor: 'rgba(255, 99, 132, 0.7)',
+              borderColor: 'rgb(255, 99, 132)',
+              data: datos
+            }]
+          },
+          options: {
+            title: {
+              display: false
+            },
+            legend: {
+              display: false
+            },
+            scales: {
+              xAxes: [{
+                ticks: {
+                  beginAtZero: true
+                },
+                position: 'top'
+              }]
+            }
+          }
+        });
+
+      }
+      function grafico_barras_hori_estu(links_json){
+        var array = links_json.split(';');
+        const lab =  ['Problem_Video','Problem_Forum','Problem_Problem','Video_Problem', 'Video_Forum', 'Video_Video', 'Forum_Problem','Forum_Video','Forum_Forum' ];
+        var datos = [0,0,0,0,0,0,0,0,0];
+        var array = links_json.split(';');
+        for (let i = 0; i < array.length - 1; i++) {
+          try {
+            var coche = JSON.parse(array[i].replaceAll("\'", "\""));
+            var str = JSON.stringify(coche);
+            if (links_json.includes('Forum Comment') == true ){
+              if(str.includes("\"source\":\"Video")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[5] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[3] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Forum Comment")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[4] =  datos[4] + parseInt(ar[0],10);
+                }
+                if(str.includes("\"target\":\"Forum Search")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[4] =  datos[4] + parseInt(ar[0],10);
+                }
+                if(str.includes("\"target\":\"Forum Created")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[4] =  datos[4] + parseInt(ar[0],10);
+                }
+                if(str.includes("\"target\":\"Forum Response")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[4] =  datos[4] + parseInt(ar[0],10);
+                }
+              }
+              if(str.includes("\"source\":\"Problem")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[0] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[2] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Forum Comment")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[1] =  datos[1] + parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Forum Search")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[1] =  datos[1] + parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Forum Created")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[1] =  datos[1] + parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Forum Response")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[1] =  datos[1] + parseInt(ar[0],10);
+                }
+              }if(str.includes("\"source\":\"Forum")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[7] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[6] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Forum")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[8] = datos[8] + parseInt(ar[0],10);
+                }
+              }
+            }else{
+              if(str.includes("\"source\":\"Video")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[5] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[3] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Forum")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[4] = parseInt(ar[0],10);
+                }
+
+              }
+              if(str.includes("\"source\":\"Problem")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[0] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[2] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Forum")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[1] = parseInt(ar[0],10);
+                }
+
+              }
+              if(str.includes("\"source\":\"Forum")== true){
+                if(str.includes("\"target\":\"Video")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[7] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Problem")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[6] = parseInt(ar[0],10);
+                }if(str.includes("\"target\":\"Forum")== true){
+                  var name = str.split('name\":\"');
+                  var ar = name[1].split(',');
+                  datos[8] = parseInt(ar[0],10);
+
+                }
+              }
+            }
+          }catch (error) {
+            window.alert("Error de formato JSON");
+          }
+        }
+
+        const _grafica = document.querySelector("#grafica_hori");
+        new Chart(_grafica, {
+          type: 'horizontalBar',
+          data: {
+            labels: lab,
+            datasets: [{
+              backgroundColor: 'rgba(255, 99, 132, 0.7)',
+              borderColor: 'rgb(255, 99, 132)',
+              data: datos
+            }]
+          },
+          options: {
+            title: {
+              display: false
+            },
+            legend: {
+              display: false
+            },
+            scales: {
+              xAxes: [{
+                ticks: {
+                  beginAtZero: true
+                },
+                position: 'top'
+              }]
+            }
+          }
+        });
+
+      }
+
+      //-----------------------VELOCIMETRO-------------------------------------
+
+      function velocimetro_grafica_estu(links_json){
+        const _grafica = document.querySelector("#velocimetro1");
+        const lab =  ['Problema','Forum','Video', 'Final'];
+        var datos = [0,0,0,0.0];
+        var array = links_json.split(';');
+        for (let i = 0; i < array.length - 1; i++) {
+          try {
+            var coche = JSON.parse(array[i].replaceAll("\'", "\""));
+            var str = JSON.stringify(coche);
+            if(str.includes("\"target\":\"Video")== true){
+              var name = str.split('name\":\"');
+              var ar = name[1].split(',');
+              datos[2] = datos[2]+parseInt(ar[0],10);
+            }if(str.includes("\"target\":\"Problem")== true){
+              var name = str.split('name\":\"');
+              var ar = name[1].split(',');
+              datos[0] =datos[0]+ parseInt(ar[0],10);
+            }if(str.includes("\"target\":\"Forum")== true){
+              var name = str.split('name\":\"');
+              var ar = name[1].split(',');
+              datos[1] =  datos[1] + parseInt(ar[0],10);
+            }if(str.includes("\"target\":\"Fail")== true | str.includes("\"target\":\"Pass")== true){
+              var name = str.split('name\":\"');
+              var ar = name[1].split(',');
+              datos[3] =   parseFloat(ar[0],10);
+            }
+
+
+          }catch (error) {
+            window.alert("Error de formato JSON");
+          }
+        }
+        var total = 0;
+        for (let i = 0; i < datos.length-1 ; i++) {
+          total = total + datos[i]
+
+        }
+
+  let opts = {
+          staticLabels: {
+            font: "10px sans-serif",
+            labels: [0, total],
+            fractionDigits: 0
+          },
+          angle: 0, // The span of the gauge arc
+          lineWidth: 0.44, // The line thickness
+          radiusScale: 0.83, // Relative radius
+          pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+          },
+          limitMax: false, // If false, max value increases automatically if value > maxValue
+          limitMin: false, // If true, the min value of the gauge will be fixed
+          colorStart: '#6FADCF', // Colors
+          colorStop: '#8FC0DA', // just experiment with them
+          strokeColor: '#E0E0E0', // to see which ones work best for you
+          generateGradient: true,
+          highDpiSupport: true // High resolution support
+        }
+        document.getElementById("titulo_velocimetro1").innerHTML = 'Video';
+        let target =  document.querySelector("#velocimetro1"); // your canvas element
+        let gaugeChart = new Gauge(target).setOptions(opts) // create sexy gauge!
+        gaugeChart.maxValue = total // set max gauge value
+        gaugeChart.setMinValue(0) // Prefer setter over gauge.minValue = 0
+        gaugeChart.animationSpeed = 32 // set animation speed (32 is default value)
+        gaugeChart.set(datos[2]) // set actual value
+        document.getElementById("titulo_velocimetro2").innerHTML = 'Forum';
+        let target1 =  document.querySelector("#velocimetro2"); // your canvas element
+        let gaugeChart1 = new Gauge(target1).setOptions(opts) // create sexy gauge!
+        gaugeChart1.maxValue = total // set max gauge value
+        gaugeChart1.setMinValue(0) // Prefer setter over gauge.minValue = 0
+        gaugeChart1.animationSpeed = 32 // set animation speed (32 is default value)
+        gaugeChart1.set(datos[1])
+        document.getElementById("titulo_velocimetro3").innerHTML = 'Problem';
+        let target2 =  document.querySelector("#velocimetro3"); // your canvas element
+        let gaugeChart2 = new Gauge(target2).setOptions(opts) // create sexy gauge!
+        gaugeChart2.maxValue = total // set max gauge value
+        gaugeChart2.setMinValue(0) // Prefer setter over gauge.minValue = 0
+        gaugeChart2.animationSpeed = 32 // set animation speed (32 is default value)
+        gaugeChart2.set(datos[0])
+        let opts2 = {
+                staticLabels: {
+                  font: "10px sans-serif",
+                  labels: [0, 10],
+                  fractionDigits: 0
+                },
+                angle: 0, // The span of the gauge arc
+                lineWidth: 0.44, // The line thickness
+                radiusScale: 0.83, // Relative radius
+                pointer: {
+                  length: 0.6, // // Relative to gauge radius
+                  strokeWidth: 0.035, // The thickness
+                  color: '#000000' // Fill color
+                },
+                limitMax: false, // If false, max value increases automatically if value > maxValue
+                limitMin: false, // If true, the min value of the gauge will be fixed
+                colorStart: '#6FADCF', // Colors
+                colorStop: '#8FC0DA', // just experiment with them
+                strokeColor: '#E0E0E0', // to see which ones work best for you
+                generateGradient: true,
+                highDpiSupport: true // High resolution support
+              }
+        document.getElementById("titulo_velocimetro4").innerHTML = 'Grade';
+        let target3 =  document.querySelector("#velocimetro4"); // your canvas element
+        let gaugeChart3 = new Gauge(target3).setOptions(opts2) // create sexy gauge!
+        gaugeChart3.maxValue = 10 // set max gauge value
+        gaugeChart3.setMinValue(0) // Prefer setter over gauge.minValue = 0
+        gaugeChart3.animationSpeed = 32 // set animation speed (32 is default value)
+        gaugeChart3.set(datos[3])
+
+
+      }
+      function velocimetro_grafica(links_json){
+        const lab =  ['Problema','Forum','Video'];
+        var datos = [0,0,0];
+        var array = links_json.split(';');
+        for (let i = 0; i < array.length - 1; i++) {
+          try {
+            var coche = JSON.parse(array[i].replaceAll("\'", "\""));
+            var str = JSON.stringify(coche);
+            if(str.includes("\"target\":\"Video")== true){
+              var name = str.split('name');
+              var ar = name[1].split('|');
+              datos[2] = datos[2]+parseInt(ar[1],10);
+            }if(str.includes("\"target\":\"Problem")== true){
+              var name = str.split('name');
+              var ar = name[1].split('|');
+              datos[0] =datos[0]+ parseInt(ar[1],10);
+            }if(str.includes("\"target\":\"Forum")== true){
+              var name = str.split('name');
+              var ar = name[1].split('|');
+              datos[1] =  datos[1] + parseInt(ar[1],10);
+            }
+
+
+          }catch (error) {
+            window.alert("Error de formato JSON");
+          }
+        }
+        var total = 0;
+        for (let i = 0; i < datos.length ; i++) {
+          total = total + datos[i]
+
+        }
+
+  let opts = {
+          staticLabels: {
+            font: "10px sans-serif",
+            labels: [0, total],
+            fractionDigits: 0
+          },
+          angle: 0, // The span of the gauge arc
+          lineWidth: 0.44, // The line thickness
+          radiusScale: 0.83, // Relative radius
+          pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+          },
+          limitMax: false, // If false, max value increases automatically if value > maxValue
+          limitMin: false, // If true, the min value of the gauge will be fixed
+          colorStart: '#6FADCF', // Colors
+          colorStop: '#8FC0DA', // just experiment with them
+          strokeColor: '#E0E0E0', // to see which ones work best for you
+          generateGradient: true,
+          highDpiSupport: true // High resolution support
+        }
+        document.getElementById("titulo_velocimetro1").innerHTML = 'Video';
+        let target =  document.querySelector("#velocimetro1"); // your canvas element
+        let gaugeChart = new Gauge(target).setOptions(opts) // create sexy gauge!
+        gaugeChart.maxValue = total // set max gauge value
+        gaugeChart.setMinValue(0) // Prefer setter over gauge.minValue = 0
+        gaugeChart.animationSpeed = 32 // set animation speed (32 is default value)
+        gaugeChart.set(datos[2]) // set actual value
+        document.getElementById("titulo_velocimetro2").innerHTML = 'Forum';
+        let target1 =  document.querySelector("#velocimetro2"); // your canvas element
+        let gaugeChart1 = new Gauge(target1).setOptions(opts) // create sexy gauge!
+        gaugeChart1.maxValue = total // set max gauge value
+        gaugeChart1.setMinValue(0) // Prefer setter over gauge.minValue = 0
+        gaugeChart1.animationSpeed = 32 // set animation speed (32 is default value)
+        gaugeChart1.set(datos[1])
+        document.getElementById("titulo_velocimetro3").innerHTML = 'Problem';
+        let target2 =  document.querySelector("#velocimetro3"); // your canvas element
+        let gaugeChart2 = new Gauge(target2).setOptions(opts) // create sexy gauge!
+        gaugeChart2.maxValue = total // set max gauge value
+        gaugeChart2.setMinValue(0) // Prefer setter over gauge.minValue = 0
+        gaugeChart2.animationSpeed = 32 // set animation speed (32 is default value)
+        gaugeChart2.set(datos[0])
+
+      }
+      //-----------------------CREAR FIGURA-------------------------------------
+
+      function figura(links_json){
+        var svg; //Contenedor donde se encuentra la visualizacion
+        var links = links_json; //Datos leidos del JSON
+        var nodes = {};
+
+        // Obtiene los nodos con los links entre nodos
+        links.forEach(function(link) {
+          link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
+          link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
+        });
+
+        // Tamaño de la visualizacion
+        var width = 1500;
+        var height = 1500;
+
+        // Se crea el contenedor svg y se pone en el html
+        svg = d3.select("#image").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+        // Per-type markers, as they don't inherit styles.
+		
+        // Grafico quiado por fuezas
+        var force = d3.layout.force()
+        .nodes(d3.values(nodes)) // Valor de los nodos
+        .links(links)            // Valor de los links
+        .size([width, height])   // Tamaño de la visualizacion
+        .linkDistance(600)       // Distancia entre nodos
+        .charge(-10000)          // Nodos se repelen/atraen (evitar solape)
+        .on("tick", tick)        // Interacion
+        .start();                // Start del gráfico
+
+        // Mas atributos: https://d3-wiki.readthedocs.io/zh_CN/master/Force-Layout/
+
+
+        //CREAR LINKS Y SUS CARACTERISTICAS
+
+        var path = svg.append("g").selectAll("path") // Selecion de links y añadirlos
+        .data(force.links())
+        .enter().append("path")
+        .attr("id",function(d,i) { return "linkId_" + i; }) // Poner nombre a cada nodo
+        .attr("class", function(d) { return "link " + d.type; })
+        .attr("marker-end", function(d) { return "url(#" + d.type + ")"; }); // Tipo de marcador
+
+        // Poner nombre a los links
+        var labelText = svg.selectAll(".labelText")
+        .data(force.links())
+        .enter().append("text")
+        .attr("class","labelText")
+        .attr("dx",70)
+        .attr("dy",15)
+        .style("fill", function(d){return d.color})
+        .attr("startOffset", "0%")
+        .append("textPath")
+        .attr("xlink:href",function(d,i) { return "#linkId_" + i;})
+        .text(function(d) { return d.name; });
+
+        // Añadir flechas a los links
+        var markers = svg.append("defs").selectAll("marker")
+        .data(["apr", "sus", "video", "problem", "forum", "forum_se", "forum_co", "forum_re", "forum_cr", "Start"])
+        .enter().append("marker")
+        .attr("id", function(d) { return d; })
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 37)                       // Punto de referencia para alinear el marcador con el nodo (link)
+        .attr("refY", -3)                       // Punto de referencia para alinear el marcador con el link
+        .attr("markerWidth", 10)                // Ancho del triangulo
+        .attr("markerHeight", 10)               // Alto del triangulo
+        .attr("orient", "auto")                 // Orientación del marcador automática
+        .append("path")                         // Añadir al path
+        .attr("d", "M0,-5L10,0L0,5");           // https://www.w3.org/TR/SVG/paths.html
+
+        //.attr("text-anchor", "middle")
+
+        //CREAR NODOS Y SUS CARACTERISTICAS
+
+        var circle = svg.append("g").selectAll("circle") // Selecion de nodos y añadirlos
+        .data(force.nodes())
+        .enter().append("circle")
+        .style("fill", function(d) {
+          if(d.name.includes("Pass")){
+            return "#02C874 ";
+          }
+          else if(d.name.includes("Video")){
+            return "#FFA042";
+          }
+          else if(d.name.includes("Problem")){
+            return "#00CACA";
+          }
+          else if(d.name.includes("Forum")){
+            if(d.name.includes("Comment")){
+              return "#FF95CA";
+            }
+            else if(d.name.includes("Created")){
+              return "#97CBFF";
+            }
+            else if(d.name.includes("Search")){
+              return "#CA8EFF";
+            }
+            else if(d.name.includes("Response")){
+              return "#9393FF";
+            }
+            else{
+              return "#FFCC33";
+            }
+
+          }
+          else if(d.name.includes("Start")){
+            return "#E1E100";
+          }
+
+          else{
+            return "#FF5151";
+          }
+        })
+        .attr("r", 40)                               // Tamaño de los nodos
+        .call(force.drag);                           // Para arrastrar el círculo seleccionado con el ratón
+
+        // Poner nombre a los nodos
+        var text = svg.append("g").selectAll("text") // Texto para cada nodo
+        .data(force.nodes())
+        .enter().append("text")                  // Texto a añadir
+        .attr("x", 0)                            // Posicion del texto respecto a los nodos
+        .attr("y", 0)
+        .text(function(d) { return d.name; });   // Nombre de cada nodo asignado por d3
+
+
+        function tick() {
+          path.attr("d", linkArc);
+          circle.attr("transform", transform);
+          text.attr("transform", transform);
+        }
+
+        function linkArc(d) {
+          var dx = d.target.x - d.source.x,
+          dy = d.target.y - d.source.y,
+          dr = Math.sqrt(10*dx * dx + 10*dy * dy);
+          return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+        }
+
+        function transform(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        }
+
+      }
+
+      //http://futbolscientist.com/visualizar-red-de-pases-mediante-force-directed-graph-de-d3js/
+      //https://d3-spanish.readthedocs.io/_/downloads/es/latest/pdf/
+      //https://ifpb.github.io/javascript-guide/packages/chart/gaugejs/
+    </script>
+  </body>
+  </html>

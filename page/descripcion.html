@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>descripción</title>
+  <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+  <div id = "BarraNavegacion">
+    <li> <a href="#"><img src="logo.png" ></a></li>
+    <li> <a href="#" id ="Cabecera"> ANALIZADOR DE PATRONES</a></li>
+    <li> <a href="#" id ="Nav" > </a>
+      <li> <a href="file:///Users/mariasanzgomez/Documents/Universidad/Cuartoan%CC%83o/TFG/HTML/pagina/Principal.html">INICIO</a> </li>
+      <li> <a href="file:///Users/mariasanzgomez/Documents/Universidad/Cuartoan%CC%83o/TFG/HTML/pagina/descripcion.html">DESCRIPCIÓN</a> </li>
+      <li> <a href="file:///Users/mariasanzgomez/Documents/Universidad/Cuartoan%CC%83o/TFG/HTML/pagina/analisis.html">ANÁLISIS DE FICHEROS</a> </li>
+    </li>
+  </div>
+  <div id = "descripcion_general">
+    <div id = "descripcion">
+      <br></br>
+      <h1>DESCRIPCIÓN DE LA WEB</h1>
+      <hr>
+      <div id="descripcion_columnas">
+        <h2>
+          Para probar el funcionamiento de la web se necesitan datos extraídos de MOOCs y clases interactivas de la plataforma edX.
+          Esta plataforma proporciona un registro con distintos eventos.
+          Los siguientes eventos son los que se han considerado más significativos para poder realizar una investigación sobre los patrones:
+          <ul>
+            <li> Vídeo: son eventos que se producen al reproducir un vídeo, como parar, avanzar y pausar el vídeo.</li>
+            <li> Problema: son eventos que se producen al hacer un test o un ejercicio evaluable. Este contiene una nota ponderada sobre 10.</li>
+            <li> Foro: son eventos que se producen al interactuar con el foro del curso. Cómo puede ser mirar una pregunta, responderla o crear una nueva discursión.</li>
+            <ul>
+            </h2>
+            <h2>
+              En el apartado de <a HREF="file:///Users/mariasanzgomez/Documents/Universidad/Cuartoan%CC%83o/TFG/HTML/pagina/analisis.html"> <i> Análisis de ficheros </i><a>
+                se mostrarán varios gráficos basándose en los eventos anteriores.
+              </h2>
+            </div>
+            <br></br>
+            <h1>DESCRIPCIÓN DE LA VISUALIZACIÓN</h1>
+            <hr>
+            <div id="descripcion_columnas2">
+              <h2>
+                Teneindo en cuenta que se pueden seleccionar varios tipos de archivos, se muestran distintos gráficos. Estos son los tipos de archivos que se pueden introducir:
+                <ul>
+                  <li>Archivo de un estudiante sólo</li>
+                  <li>Archivo de todos los estudiantes</li>
+                </ul>
+
+                En el caso de que se detecte un fichero de <b>UN SOLO ESTUDIANTE</b> se mostrarán los siguientes gráficos:
+                <ul>
+                  <li> <u>Diagrama final</u> con los eventos del estudiante como este:
+                    <div id="imagen">
+                      <img src="estu_d.png" width="400" height="300">
+                      <div>Diagrama final de un estudiante</div>
+                    </div>
+                  </li>
+                  <li><u>Gráfico de barras horizontales </u>  con los eventos principales, de vídeo a problema, de vídeo a problema, de vídeo a vídeo etc...
+                    <div id="imagen">
+                      <img src="hori_e.png" width="400" height="200">
+                      <div>Gráfico horizontal de un estudiante</div>
+                    </div>
+                  </li>
+                  <li><u>Cuatro velocímetros</u> con los tres eventos principales (Foro, vídeo y Problema) y la nota final. Siendo para el primer caso el punto máximo del velocímetro el número total de eventos
+                    y para el caso de la nota final el punto máximo el 10.
+                    <div id="imagen">
+                      <img src="velo_e.png" width="300" height="200">
+                      <div>Velocímetro de un estudiante</div>
+                    </div>
+                  </li>
+                </ul>
+                Por el contrario, en el caso de que se detecte un fichero de <b>TODOS LOS ESTUDIANTES</b> se mostrarán los siguientes gráficos:
+                <ul>
+                  <li> <u>Diagrama final</u> con los eventos totales de los estudiantes como este:
+                    <div id="imagen">
+                      <img src="tot_d.png" width="500" height="300">
+                      <div>Diagrama final de los estudiantes</div>
+                    </div>
+                  </li>
+                  <li><u>Gráfico de barras verticales </u> con el número total de suspensos y aprobados.
+                    <div id="imagen">
+                      <img src="tot_ver.png" width="200" height="200">
+                      <div>Gráfico de las calificaciones de los estudiantes</div>
+                    </div>
+                  </li>
+                  <li><u>Gráfico de barras horizontales</u>  con los eventos principales, de vídeo a problema, de vídeo a problema, de vídeo a vídeo etc...
+                    <div id="imagen">
+                      <img src="hori_tot.png" width="400" height="200">
+                      <div>Gráfico horizontal de los estudiantes</div>
+                    </div>
+                  </li>
+                  <li><u>Tres velocímetros</u> con los tres eventos principales (Foro, vídeo y Problema). Siendo el punto máximo del velocímetro de eventos el total de estos.
+                    <div id="imagen">
+                      <img src="velo_tot.png" width="300" height="200">
+                      <div>Velocímetro de los estudiantes</div>
+                    </div>
+                  </li>
+                </ul>
+              </h2>
+            </div>
+            <br></br>
+            <h1>DESCRIPCIÓN EXTENDIDA DEL DIAGRAMA FINAL</h1>
+            <hr>
+            <div>
+              <h2>
+                <u>FICHERO DE VARIOS ESTUDIANTES</u>
+                <br/> En este caso nos encontramos nodos que se interpretan de distinas maneras:
+                <ul>
+                  <li>El nodo Inicio: indica que es lo primero que hacen los estudiantes al iniciar una nueva sesión. Las flechas salientes de este hacen un 100%.
+                    En el link se indica el porcentaje y el número real de eventos.</li>
+                    <li>Los nodos de suspensos y el de aprobados suman el 100% con sus flechas entrantes e indican el número de estudiantes que han superado el curso.
+                      En cada path podemos cual es el último evento que realizan los estudiantes y el porcentaje/número real desde el que parten. </li>
+                      <li> El resto de nodos indican los eventos, siendo el nombre del nodo los eventos que van de el mismo a sí mismo.
+                        Los paths de los nodos indican: % de eventos de este tipo sobre el total | número real | % de eventos de este tipo sobre el tipo de evento (foro, vídeo o problema).
+                      </li>
+                    </ul>
+                    <u>FICHERO DE UN ESTUDIANTE</u>
+                    <br/> En este gráfico sólo nos encontramos dos tipos de nodo:
+                    <ul>
+                      <li> Los nodos de eventos: en ellos esta representado el número de eventos real y
+                        el número de dentro del nodo indica las veces que desde ese evento vuelve a este. </li>
+                        <li> El nodo aprobado/suspensos indica su calificación final sobre 10 en el path y este parte del último evento realizado. </li>
+                      </ul>
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </body>
+  </html>

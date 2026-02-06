@@ -1,0 +1,317 @@
+
+body{
+  font-family: Optima,candara;
+  color: black;
+  background-color: #EEEEEE;
+
+}
+
+/* BARRA DE NAVEGACION */
+#BarraNavegacion {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid #000000;
+  align-items: center;
+  background-color: white;
+
+}
+
+#BarraNavegacion li{
+  display:inline;
+  font-size:25px;
+  border-right: medium solid #000000;
+  margin-right: 5px;
+  margin-left: 5px;
+
+
+}
+
+#BarraNavegacion li:first-child {
+  border-right:none;
+  float:left;
+  margin-top: 0%;
+}
+
+#BarraNavegacion li:nth-child(2){
+  border-right:none;
+  float:left;
+  margin-right: 2%;
+}
+
+#BarraNavegacion li:last-child{
+  border-right:none;
+}
+
+#BarraNavegacion li:nth-child(3){
+  border-right:none;
+}
+
+#Cabecera {
+  font-size:45px;
+  -webkit-text-stroke: 2px black;
+  -webkit-text-fill-color: white;
+}
+
+/*INICIO*/
+.Inicio{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  align-items: center;
+  background-color: #EEEEEE;
+}
+
+/*Texto*/
+#Inicio_text{
+  width: 30%;
+  margin-left: 2%;
+  text-align: center;
+}
+
+/*Slider imagenes*/
+.Inicio_slide{
+  width: 95%;
+  margin:auto;
+  overflow: hidden;
+}
+
+.Inicio_slide ul{
+  padding: 0;
+  animation: cambio 10s infinite;
+  display: flex;
+  width: 300%
+}
+.Inicio_slide li{
+  width: 100%;
+  list-style: none;
+
+}
+.Inicio_slide img{
+  width: 100%;
+}
+
+@keyframes cambio {
+  0%{margin-left: 0%}
+  30%{margin-left: 0%}
+  33%{margin-left: -100%}
+  60%{margin-left: -100%}
+  66%{margin-left: -200%}
+  100%{margin-left: -200%}
+}
+/*DESCRIPCION*/
+#descripcion{
+  margin-right: 10%;
+  margin-left: 10%;
+    background-color: #EEEEEE;
+}
+
+#descripcion_general{
+  width: 100%;
+  height: 100%;
+  background-color: #EEEEEE;
+}
+
+#descripcion_columnas{
+
+    -webkit-column-count: 3; /* Chrome, Safari, Opera */
+    -moz-column-count: 3; /* Firefox */
+    column-count: 3;
+}
+#descripcion_columnas2{
+
+    -webkit-column-count: 2; /* Chrome, Safari, Opera */
+    -moz-column-count: 2; /* Firefox */
+    column-count: 2;
+}
+/*https://rolandocaldas.com/html5/texto-en-varias-columnas-css3
+https://www.lawebdelprogramador.com/codigo/CSS/3566-Poner-un-texto-encima-de-una-foto-en-la-parte-inferior-de-la-misma.html
+*/
+
+#imagen {
+			width:400px;
+			height:300px;
+			position:relative;
+		}
+		#imagen>div
+		{
+			position: relative;
+			bottom:25px;
+      font-size: 10px;
+			color:#fff;
+			background-color:#000;
+			padding:2px 10px;
+			opacity:0.5;
+			font-weight:bold;
+		}
+
+
+/* BOTON PROCESAR*/
+
+.boton.alternativo {
+  BORDER: rgb(128,128,128) 1px solid;
+  FONT-SIZE: 20pt;
+  color: white;
+  text-align:center;
+  width: 15%;
+  padding: 15px 25px;
+  background-color: #766161;
+  border-radius: 10px;
+  font-family: Optima,candara;
+  border: 2px solid #766161;
+  border-radius: 7px;
+  margin-left:  20%;
+}
+
+.boton.alternativo:hover {
+  background-color: white;
+  color: #766161;
+  text-decoration:none;
+}
+
+/*SELECIONAR ARCHIVO*/
+#get_the_file{
+  background-color: #F4DADA;
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 auto 0;
+  min-height: 15px;
+  overflow: hidden;
+  padding: 10px;
+  position: relative;
+  text-align: center;
+  width: 400px;
+  font-family: Optima,candara;
+  margin-left: 2%;
+
+}
+/*GRAFICAS*/
+
+#resultado {
+
+  width:100%
+}
+#r2{
+  position:relative;
+  width:25%;
+  float:right;
+}
+#r1 {
+  float:left;
+  width:75%;
+  height:75%;
+}
+
+#contenido{
+
+      margin-left: 2%;
+}
+
+
+
+
+/*
+GRAFICA: LOS NODOS Y LINKS
+*/
+.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+#apr {
+  fill:  #02C874 ;
+}
+.link.apr {
+  stroke: #02C874 ;
+}
+
+#sus {
+  fill:  #FF5151;
+}
+.link.sus {
+  stroke: #FF5151;
+}
+
+#video {
+  fill:  #FFA042;
+}
+.link.video {
+  stroke: #FFA042;
+}
+
+#forum {
+  fill:  #FFCC33;
+}
+.link.forum {
+  stroke:  #FFCC33;
+}
+
+#forum_se {
+  fill:  #CA8EFF;
+}
+.link.forum_se {
+  stroke:  #CA8EFF;
+}
+#forum_re {
+  fill:  #9393FF;
+}
+.link.forum_re {
+  stroke:  #9393FF;
+}
+#forum_co {
+  fill:  #FF95CA;
+}
+.link.forum_co {
+  stroke:  #FF95CA;
+}
+
+#forum_cr{
+  fill:  #97CBFF;
+}
+.link.forum_cr {
+  stroke:  #97CBFF;
+}
+
+
+#problem {
+  fill:  #00CACA;
+}
+
+.link.problem{
+  stroke: #00CACA;
+}
+
+#Start {
+  fill:  #E1E100;
+}
+.link.Start{
+  stroke:  #E1E100;
+}
+circle {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  font: 20px sans-serif;
+  pointer-events: none;
+  color: #ccc;
+}
+
+
+a {
+  outline: none;
+  text-decoration: none;
+  padding: 2px 1px 0;
+}
+
+a:link {
+  color: #000000;
+}
+
+a:visited {
+  color: #000000;
+}
